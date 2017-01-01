@@ -6,7 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
 set(SOURCE_FILES main.cpp network/ConnectionHandler.cpp network/ConnectionHandler.h
         network/ClientHandler.cpp network/ClientHandler.h
         local/CommandParser.cpp local/CommandParser.h
-        local/DBOperator.cpp local/DBOperator.h)
+        local/DBOperator.cpp local/DBOperator.h
+        local/QueryResolver.cpp local/QueryResolver.h)
 add_executable(Server ${SOURCE_FILES})
 
 include_directories(/home/alin/Part2Part/shared/include)

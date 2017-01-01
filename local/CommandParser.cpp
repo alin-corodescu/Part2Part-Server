@@ -6,6 +6,7 @@
 #include <FileDescriptionBuilder.h>
 #include "CommandParser.h"
 #include "DBOperator.h"
+#include "QueryResolver.h"
 
 void CommandParser::parseJoin(bool &joined) {
 
@@ -56,5 +57,16 @@ void CommandParser::parsePublish(bool joined) {
 }
 
 void CommandParser::parseQuery(bool joined) {
-    
+    unsigned int querySize;
+
+    readUInt(socket,querySize);
+    FileDescriptionBuilder *builder = new FileDescriptionBuilder();
+    char* queryString;
+    queryString = readString(socket,querySize);
+    FileDescription* query = builder->buildFromString(queryString);
+
+    QueryResolver *queryResolver = new QueryResolver();
+
+    queryResolver->solveQuery(query);
+
 }
