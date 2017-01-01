@@ -32,33 +32,33 @@ void ClientHandler::_listenForCommands() {
              * to do such a thing
              */
             last_activity = steady_clock::now();
-            incomingCommandParser->parseResults(joined);
+            incomingCommandParser->parseJoin(joined);
         }
 
         if (!strcmp(command, commandName(PUBLISH))) {
             last_activity = steady_clock::now();
-            incomingCommandParser->parseRequestFileFrom(joined);
+            incomingCommandParser->parsePublish(joined);
         }
 
         if (!strcmp(command, commandName(QUERY))) {
             last_activity = steady_clock::now();
-            incomingCommandParser->parseOpenCommand(joined);
+            incomingCommandParser->parseQuery(joined);
         }
 
         if (!strcmp(command, commandName(FIND))) {
             last_activity = steady_clock::now();
-            incomingCommandParser->parseOpenCommand(joined);
+            incomingCommandParser->parseFind(joined);
         }
 
         if (!strcmp(command, commandName(UNPUBLISH))) {
             last_activity = steady_clock::now();
-            incomingCommandParser->parseOpenCommand(joined);
+            incomingCommandParser->parseUnpublish(joined);
         }
 
         if (!strcmp(command, commandName(NOTIFIY))) {
             //NAT related command
             last_activity = steady_clock::now();
-            incomingCommandParser->parseOpenCommand(joined);
+            incomingCommandParser->parseNotify(joined);
         }
 
         if (!strcmp(command, commandName(BYE))) {
@@ -66,7 +66,7 @@ void ClientHandler::_listenForCommands() {
              * reference on joined aswell
              */
             last_activity = steady_clock::now();
-            incomingCommandParser->parseOpenCommand(joined);
+            incomingCommandParser->parseBye(joined);
         }
 
         if(!strcmp(command, commandName(HEARTBEAT))){
@@ -107,6 +107,7 @@ void ClientHandler::_processCommandQueue() {
 }
 
 void ClientHandler::start() {
+    incomingCommandParser->setParent(this);
     std::thread([=] {_listenForCommands();});
     std::thread([=] {_processCommandQueue();});
 
@@ -114,4 +115,22 @@ void ClientHandler::start() {
 
 std::chrono::steady_clock::time_point ClientHandler::lastActive() {
     return last_activity;
+}
+
+int ClientHandler::getCli_id() const {
+    return cli_id;
+}
+
+void ClientHandler::setCli_id(int cli_id) {
+    ClientHandler::cli_id = cli_id;
+}
+
+void ClientHandler::setAddress(Address *address) {
+    this->peerAddress = address;
+}
+
+void ClientHandler::addJoinInfo(unsigned int privateIP, unsigned short port) {
+    peerAddress->setPrivateIP(privateIP);
+    peerAddress->setPrivatePort(port);
+    peerAddress->setPublicPort(port);
 }

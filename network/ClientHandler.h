@@ -8,6 +8,7 @@
 
 #include <queue>
 #include <mutex>
+#include <Address.h>
 #include "../local/CommandParser.h"
 #define CLEANING_INTERVAL 10
 #define INACTIVITY_THRESHOLD 10
@@ -20,7 +21,16 @@ private:
     bool joined, connected;
     std::queue<Command> commandQueue;
     std::mutex cmdQLock;
+    //DB id of the client;
+    Address* peerAddress;
+    int cli_id;
+public:
+    void setCli_id(int cli_id);
 
+public:
+    int getCli_id() const;
+
+private:
     steady_clock::time_point last_activity;
     void _listenForCommands();
     void _executeCommand(Command command);
@@ -30,6 +40,8 @@ public:
     void listenForCommands();
     void start();
     steady_clock::time_point lastActive();
+    void setAddress(Address* address);
+    void addJoinInfo(unsigned int privateIP,unsigned short port);
 };
 
 

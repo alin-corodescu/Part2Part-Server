@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <Address.h>
 #include "ConnectionHandler.h"
 #include "ClientHandler.h"
 
@@ -51,8 +52,10 @@ void ConnectionHandler::_acceptConnections() {
         if (client > 0)
         {
             ClientHandler *clientHandler = new ClientHandler(client);
+            Address *address = new Address(clientAddr.sin_addr.s_addr,clientAddr.sin_port);
+            clientHandler -> setAddress(address);
             clientHandler -> start();
-            clients.push_back(clientHandler);
+            clients.insert(clientHandler);
         }
     }
 
@@ -79,16 +82,16 @@ void ConnectionHandler::_cleaner() {
     while (1)
     {
 
-        int i;
+        std::set::iterator it;
         clientsLock.lock();
-        for (i = 0; i < clients.size();i++)
+        for (it = clients.begin(); it != clients.end();it++)
         {
             steady_clock::time_point now = steady_clock::now();
-            duration<double> timeElpased = duration_cast<duration<double>>(now - clients[i]->lastActive());
+            duration<double> timeElpased = duration_cast<duration<double>>(now - (*it)->lastActive());
             if (timeElpased.count() > INACTIVITY_THRESHOLD)
             {
-                ClientHandler* inactive = clients[i];
-                clients.erase(clients.begin() +  i);
+                ClientHandler* inactive = *it;
+                clients.erase(it);//might have a problem here
                 delete inactive;
             }
         }
