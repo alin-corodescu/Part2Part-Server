@@ -7,7 +7,7 @@ set(SOURCE_FILES main.cpp network/ConnectionHandler.cpp network/ConnectionHandle
         network/ClientHandler.cpp network/ClientHandler.h
         local/CommandParser.cpp local/CommandParser.h
         local/DBOperator.cpp local/DBOperator.h
-        local/QueryResolver.cpp local/QueryResolver.h)
+        local/QueryResolver.cpp local/QueryResolver.h local/PeerFinder.cpp local/PeerFinder.h)
 add_executable(Server ${SOURCE_FILES})
 
 include_directories(/home/alin/Part2Part/shared/include)

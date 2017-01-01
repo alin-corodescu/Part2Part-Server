@@ -23,6 +23,10 @@ private:
     std::mutex cmdQLock;
     //DB id of the client;
     Address* peerAddress;
+public:
+    Address *getPeerAddress() const;
+
+private:
     int cli_id;
 public:
     void setCli_id(int cli_id);
@@ -37,11 +41,13 @@ private:
     void _processCommandQueue();
 public:
     ClientHandler(int socket);
+    void executeCommand(Command command);
     void listenForCommands();
     void start();
     steady_clock::time_point lastActive();
     void setAddress(Address* address);
     void addJoinInfo(unsigned int privateIP,unsigned short port);
+    void sendPublicIp();
 };
 
 

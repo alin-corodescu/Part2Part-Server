@@ -26,7 +26,8 @@ private:
     void _cleaner();
 public:
     void startService();
-
+    ClientHandler* getClientForId(int id);
+    ClientHandler* getClientAtAddress(Address address);
     static ConnectionHandler* getInstance();
 };
 

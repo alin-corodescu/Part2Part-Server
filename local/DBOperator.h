@@ -38,6 +38,13 @@ public:
      */
     static void addFiles(int clientID,const std::vector<FileDescription*>& files);
 
+    /**
+     * the entry from the publications table
+     * @param clientID
+     * @param fileID
+     */
+    static void unpublish(int clientID,int fileID);
+
 };
 
 

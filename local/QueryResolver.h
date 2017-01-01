@@ -7,9 +7,13 @@
 
 
 #include <FileDescription.h>
+#include "../network/ClientHandler.h"
 
 class QueryResolver {
+private:
+    ClientHandler* attachedClient;
 public:
+    QueryResolver(ClientHandler* clientHandler);
     void solveQuery(FileDescription* query);
 };
 

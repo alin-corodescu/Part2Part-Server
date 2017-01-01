@@ -100,3 +100,11 @@ void ConnectionHandler::_cleaner() {
     }
 
 }
+
+ClientHandler *ConnectionHandler::getClientForId(int id) {
+    return clientIDs.at(id);
+}
+
+ClientHandler *ConnectionHandler::getClientAtAddress(Address address) {
+    return nullptr;
+}

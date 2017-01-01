@@ -6,6 +6,7 @@
 #include <IOWrappers.h>
 #include <cstring>
 #include <Command.h>
+#include <CommandBuilder.h>
 #include "ClientHandler.h"
 
 ClientHandler::ClientHandler(int socket) {
@@ -133,4 +134,21 @@ void ClientHandler::addJoinInfo(unsigned int privateIP, unsigned short port) {
     peerAddress->setPrivateIP(privateIP);
     peerAddress->setPrivatePort(port);
     peerAddress->setPublicPort(port);
+}
+
+Address *ClientHandler::getPeerAddress() const {
+    return peerAddress;
+}
+
+void ClientHandler::executeCommand(Command command) {
+    cmdQLock.lock();
+    commandQueue.push(command);
+    cmdQLock.unlock();
+}
+
+void ClientHandler::sendPublicIp() {
+    CommandBuilder builder;
+    builder.setType(IDENTITY);
+    builder.addArgument(peerAddress->getPublicIP());
+    executeCommand(builder.build());
 }

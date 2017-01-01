@@ -12,6 +12,7 @@ class CommandParser {
 private:
     int socket;
     ClientHandler* parent;
+    FileDescription* readFileDescription();
 public:
     void setParent(ClientHandler* clientHandler);
     void parseJoin(bool& joined);
