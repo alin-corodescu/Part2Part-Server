@@ -7,7 +7,8 @@ set(SOURCE_FILES main.cpp network/ConnectionHandler.cpp network/ConnectionHandle
         network/ClientHandler.cpp network/ClientHandler.h
         local/CommandParser.cpp local/CommandParser.h
         local/DBOperator.cpp local/DBOperator.h
-        local/QueryResolver.cpp local/QueryResolver.h local/PeerFinder.cpp local/PeerFinder.h)
+        local/QueryResolver.cpp local/QueryResolver.h local/PeerFinder.cpp local/PeerFinder.h
+        local/sqlite/sqlite3.h)
 add_executable(Server ${SOURCE_FILES})
 
 include_directories(/home/alin/Part2Part/shared/include)
@@ -17,4 +18,5 @@ target_link_libraries(Server ${CMAKE_INCLUDE_PATH}/bin/Debug/libIOWrappers.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libFileDescription.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libIntegrityChecker.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libNetworkWrappers.a
-        ${CMAKE_INCLUDE_PATH}/bin/Debug/libAddress.a)
+        ${CMAKE_INCLUDE_PATH}/bin/Debug/libAddress.a
+        home/alin/Part2Part/server/local/sqlite/libsqlite3.a)

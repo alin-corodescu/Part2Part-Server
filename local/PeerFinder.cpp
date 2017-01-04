@@ -32,3 +32,8 @@ void PeerFinder::findPeersFor(FileDescription *file) {
     attachedClient->executeCommand(builder->build());
     delete builder;
 }
+
+PeerFinder::PeerFinder(ClientHandler *clientHandler) {
+    this->attachedClient = clientHandler;
+
+}

@@ -8,9 +8,11 @@
 
 #include <vector>
 #include <FileDescription.h>
+#include "sqlite/sqlite3.h"
 
 class DBOperator {
 private:
+    static sqlite3 *db;
 public:
     /**
      * sets up the tables
@@ -40,11 +42,13 @@ public:
     static void addFiles(int clientID,const std::vector<FileDescription*>& files);
 
     /**
-     * the entry from the publications table
+     * delete the entry from the publications table
      * @param clientID
      * @param fileID
      */
     static void unpublish(int clientID,int fileID);
+
+    static int addFile(FileDescription* file);
 
 };
 
