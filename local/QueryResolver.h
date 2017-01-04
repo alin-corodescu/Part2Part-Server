@@ -14,6 +14,10 @@ private:
     ClientHandler* attachedClient;
 public:
     QueryResolver(ClientHandler* clientHandler);
+    /**
+     * need to find some files and then
+     * send them to the client via a RESULTS command
+     */
     void solveQuery(FileDescription* query);
 };
 

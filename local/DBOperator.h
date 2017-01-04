@@ -50,6 +50,12 @@ public:
 
     static int addFile(FileDescription* file);
 
+    /**
+     * finds the files in the database according to the condition specified
+     * @param condition
+     * @param ids
+     */
+    static void findFiles(const char* condition, std::vector<FileDescription*>& ids);
 };
 
 

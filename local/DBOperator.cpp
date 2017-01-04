@@ -2,6 +2,8 @@
 // Created by alin on 1/1/17.
 //
 
+#include <cstring>
+#include <FileDescriptionBuilder.h>
 #include "DBOperator.h"
 #define SQL_MAX 1000
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
@@ -25,6 +27,29 @@ static int getIDScallback(void* idVector, int argc, char **argv, char **azColNam
     //printf("\n");
     return 0;
 }
+static int FileDescriptionscallback(void* fdVector, int argc, char **argv, char **azColName){
+    using namespace std;
+    vector<FileDescription*>* ids = (vector<FileDescription*>*) fdVector;
+
+    int i;
+    FileDescriptionBuilder builder;
+    builder.init();
+    for(i=0; i<argc; i++){
+        if (!strcmp(azColName[i],"NAME"))
+            builder.addName(argv[i]);
+        if (!strcmp(azColName[i],"SIZE"))
+            builder.addSize(atoi(argv[i]));
+        if (!strcmp(azColName[i],"HASH"))
+            builder.addHash(argv[i]);
+        if (!strcmp(azColName[i],"DESCRIPTION"))
+            builder.addDescription(argv[i]);
+        if (!strcmp(azColName[i],"TYPE"))
+            builder.addType(argv[i]);
+    }
+
+    ids->push_back(builder.build());
+    return 0;
+}
 
 int DBOperator::addFile(FileDescription* fileDescription)
 {
@@ -37,7 +62,7 @@ int DBOperator::addFile(FileDescription* fileDescription)
     description = fileDescription->getDescription();
     type = fileDescription->getType();
 
-    sprintf(sql,"INSERT INTO FILES (SIZE, NAME, HASH, DESCRIPTION,TYPE) VALUES (%d, %s, %s, %s, %s);",size,name.data(),
+    sprintf(sql,"INSERT INTO FILES (SIZE, NAME, HASH, DESCRIPTION,TYPE) VALUES (%d, '%s', '%s', '%s', '%s');",size,name.data(),
     hash.data(),description.data(),type.data());
 
     char * errmsg;
@@ -205,3 +230,13 @@ void DBOperator::addFiles(int clientID, const std::vector<FileDescription *> &fi
     }
 
 }
+
+void DBOperator::findFiles(const char *condition, std::vector<FileDescription *> &ids) {
+    char sql[SQL_MAX];
+    char * errmsg;
+
+    sprintf(sql,"SELECT * FROM FILES WHERE %s;",condition);
+
+    sqlite3_exec(db,sql,FileDescriptionscallback,(void*) &ids,&errmsg);
+}
+
