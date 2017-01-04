@@ -10,6 +10,7 @@
 #include <FileDescription.h>
 
 class DBOperator {
+private:
 public:
     /**
      * sets up the tables

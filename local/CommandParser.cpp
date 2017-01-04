@@ -110,25 +110,25 @@ void CommandParser::parseUnpublish(bool joined) {
 void CommandParser::parseNotify(bool joined) {
 //this should come on a new connection
     //daca atunci cand primesc un notify B, trimit la B un open A => A este adresa de pe care primesc notfiy;
-    unsigned int  ip;
-    unsigned short port;
-    readUInt(socket,ip);
-    readUShort(socket,port);
+    unsigned int  publicIp,privateIp;
+    unsigned short publicPort,privatePort;
+    readUInt(socket,publicIp);
+    readUShort(socket,publicPort);
+    readUInt(socket,privateIp);
+    readUShort(socket,privatePort);
 
-    Address address;
-    address.setPublicIP(ip);
-    address.setPublicPort(port);
+    Address address(publicIp,publicPort,privateIp,privatePort);
 
     ConnectionHandler *connectionHandler = ConnectionHandler::getInstance();
-    ClientHandler* peer = connectionHandler->getClientAtAddress(address);
-
-    //case when A notifies B to open one port
-    CommandBuilder commandBuilder;
-    commandBuilder.setType(OPEN);
-    commandBuilder.addArgument(parent->getPeerAddress()->getPublicIP());
-    commandBuilder.addArgument(parent->getPeerAddress()->getPublicPort());
-    Command open = commandBuilder.build();
-    peer->executeCommand(open);
+    ClientHandler* peer = connectionHandler->getClientConnectedWith(address);
+    if (peer != nullptr) {
+        CommandBuilder commandBuilder;
+        commandBuilder.setType(OPEN);
+        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicIP());
+        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicPort());
+        Command open = commandBuilder.build();
+        peer->executeCommand(open);
+    }
 
 
 }

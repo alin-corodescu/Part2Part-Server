@@ -27,7 +27,14 @@ private:
 public:
     void startService();
     ClientHandler* getClientForId(int id);
-    ClientHandler* getClientAtAddress(Address address);
+    /**
+     * checks if there is a un-joined client (connected just for hole punching)
+     * with this address, and returns a pointer to it if it is.
+     * otherwise retuns a pointer to the joined client with this address.
+     * @param address
+     * @return
+     */
+    ClientHandler* getClientConnectedWith(Address address);
     static ConnectionHandler* getInstance();
 };
 

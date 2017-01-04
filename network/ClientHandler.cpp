@@ -127,17 +127,22 @@ void ClientHandler::setCli_id(int cli_id) {
 }
 
 void ClientHandler::setAddress(Address *address) {
-    this->peerAddress = address;
+    this->connectedFrom = address;
+
+    addressForPeers->setPublicIP(address->getPublicIP());
 }
 
 void ClientHandler::addJoinInfo(unsigned int privateIP, unsigned short port) {
-    peerAddress->setPrivateIP(privateIP);
-    peerAddress->setPrivatePort(port);
-    peerAddress->setPublicPort(port);
+    addressForPeers->setPrivateIP(privateIP);
+    addressForPeers->setPrivatePort(port);
+    addressForPeers->setPublicPort(port);
+
+    //update connectedFrom with private IP aswell
+    connectedFrom->setPrivateIP(privateIP);
 }
 
-Address *ClientHandler::getPeerAddress() const {
-    return peerAddress;
+Address *ClientHandler::getAddressForPeers() const {
+    return addressForPeers;
 }
 
 void ClientHandler::executeCommand(Command command) {
@@ -149,6 +154,14 @@ void ClientHandler::executeCommand(Command command) {
 void ClientHandler::sendPublicIp() {
     CommandBuilder builder;
     builder.setType(IDENTITY);
-    builder.addArgument(peerAddress->getPublicIP());
+    builder.addArgument(connectedFrom->getPublicIP());
     executeCommand(builder.build());
+}
+
+bool ClientHandler::isJoined() const {
+    return joined;
+}
+
+Address *ClientHandler::getConnectedFrom() const {
+    return connectedFrom;
 }

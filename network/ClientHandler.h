@@ -19,12 +19,26 @@ private:
     CommandParser * incomingCommandParser;
     int communicationSocket;
     bool joined, connected;
+public:
+    bool isJoined() const;
+
+private:
     std::queue<Command> commandQueue;
     std::mutex cmdQLock;
     //DB id of the client;
-    Address* peerAddress;
+    /**
+     * address used by the peers to connect to it;
+     */
+    Address* addressForPeers;
+    /**
+     * address used to connect to the server
+     */
+    Address* connectedFrom;
 public:
-    Address *getPeerAddress() const;
+    Address *getConnectedFrom() const;
+
+public:
+    Address *getAddressForPeers() const;
 
 private:
     int cli_id;

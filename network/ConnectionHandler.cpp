@@ -55,6 +55,9 @@ void ConnectionHandler::_acceptConnections() {
             Address *address = new Address(clientAddr.sin_addr.s_addr,clientAddr.sin_port);
             clientHandler -> setAddress(address);
             clientHandler -> start();
+            /**
+             * maybe not here, maybe after a join
+             */
             clients.insert(clientHandler);
         }
     }
@@ -105,6 +108,33 @@ ClientHandler *ConnectionHandler::getClientForId(int id) {
     return clientIDs.at(id);
 }
 
-ClientHandler *ConnectionHandler::getClientAtAddress(Address address) {
+ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
+    using namespace std;
+
+    set<ClientHandler*>::iterator it;
+    for (it = clients.begin(); it != clients.end(); it++)
+    {
+        Address *addr = (*it)->getConnectedFrom();
+        //if there is an un-joined peer which is connect from this addr
+        if (!(*it)->isJoined())
+        {
+            if (addr->getPublicIP() == address.getPublicIP() &&
+                    addr->getPublicPort() == address.getPublicPort())
+            return *it;
+        }
+    }
+    //if there is no un-joined client waiting at this address means
+    // that this is a new Notify request, and should find the client with the
+    //exact same fields as the parameter
+    for (it = clients.begin(); it != clients.end(); it++)
+    {
+        Address *addr = (*it)->getAddressForPeers();
+        if (addr->getPublicIP() == address.getPublicIP() &&
+            addr->getPublicPort() == address.getPublicPort() &&
+            addr->getPrivateIP() == address.getPrivatePort() &&
+            addr->getPrivatePort() == address.getPrivatePort())
+
+            return *it;
+    }
     return nullptr;
 }

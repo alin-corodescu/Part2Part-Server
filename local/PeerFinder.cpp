@@ -21,7 +21,7 @@ void PeerFinder::findPeersFor(FileDescription *file) {
     ConnectionHandler *connectionHandler  = ConnectionHandler::getInstance();
     for (i = 0; i < clients->size(); i++) {
         ClientHandler* client = connectionHandler->getClientForId(clients->at(i));
-        Address *address = client->getPeerAddress();
+        Address *address = client->getAddressForPeers();
 
         builder->addArgument(address->getPublicIP());
         builder->addArgument(address->getPublicPort());
