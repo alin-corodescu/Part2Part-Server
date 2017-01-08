@@ -7,6 +7,8 @@
 #include <cstring>
 #include <Command.h>
 #include <CommandBuilder.h>
+#include <unistd.h>
+#include <sys/socket.h>
 #include "ClientHandler.h"
 
 ClientHandler::ClientHandler(int socket) {
@@ -22,7 +24,7 @@ void ClientHandler::listenForCommands() {
 
 void ClientHandler::_listenForCommands() {
     char* command;
-    while (1)
+    while (connected)
     {
         command = readString(communicationSocket,COMM_LENGTH);
 
@@ -108,9 +110,10 @@ void ClientHandler::_processCommandQueue() {
 }
 
 void ClientHandler::start() {
+    connected = true;
     incomingCommandParser->setParent(this);
-    std::thread([=] {_listenForCommands();});
-    std::thread([=] {_processCommandQueue();});
+    threads.push_back(std::thread([=] {_listenForCommands();}));
+    threads.push_back(std::thread([=] {_processCommandQueue();}));
 
 }
 
@@ -164,4 +167,12 @@ bool ClientHandler::isJoined() const {
 
 Address *ClientHandler::getConnectedFrom() const {
     return connectedFrom;
+}
+
+ClientHandler::~ClientHandler() {
+    connected = false;
+    shutdown(communicationSocket, SHUT_RDWR);
+    for (int i = 0 ;i<threads.size(); i++)
+        threads[i].join();
+    delete incomingCommandParser;
 }

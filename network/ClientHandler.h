@@ -19,6 +19,7 @@ private:
     CommandParser * incomingCommandParser;
     int communicationSocket;
     bool joined, connected;
+    std::vector<std::thread> threads;
 public:
     bool isJoined() const;
 
@@ -62,6 +63,8 @@ public:
     void setAddress(Address* address);
     void addJoinInfo(unsigned int privateIP,unsigned short port);
     void sendPublicIp();
+
+    ~ClientHandler();
 };
 
 

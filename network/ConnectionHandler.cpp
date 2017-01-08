@@ -9,11 +9,14 @@
 #include <Address.h>
 #include "ConnectionHandler.h"
 #include "ClientHandler.h"
+#include "../local/DBOperator.h"
 
 void ConnectionHandler::startService() {
     _bindSocket();
     acceptConnections();
+    DBOperator::createTables();
     cleaner();
+    while(1); //block
 }
 
 void ConnectionHandler::acceptConnections() {
@@ -30,7 +33,7 @@ void ConnectionHandler::_bindSocket() {
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = PORT;
+    addr.sin_port = htons(PORT);
 
     if (bind(serverSocket,(struct sockaddr*) &addr,sizeof(struct sockaddr)) == -1)
     {
@@ -94,6 +97,7 @@ void ConnectionHandler::_cleaner() {
             if (timeElpased.count() > INACTIVITY_THRESHOLD)
             {
                 ClientHandler* inactive = *it;
+                DBOperator::deleteClient(inactive->getCli_id());
                 clients.erase(it);//might have a problem here
                 delete inactive;
             }
@@ -125,7 +129,8 @@ ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
     }
     //if there is no un-joined client waiting at this address means
     // that this is a new Notify request, and should find the client with the
-    //exact same fields as the parameter
+    //exact same fields as the
+    clientsLock.lock();
     for (it = clients.begin(); it != clients.end(); it++)
     {
         Address *addr = (*it)->getAddressForPeers();
@@ -136,5 +141,6 @@ ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
 
             return *it;
     }
+    clientsLock.unlock();
     return nullptr;
 }

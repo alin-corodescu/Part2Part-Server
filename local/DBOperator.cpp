@@ -22,9 +22,7 @@ static int getIDScallback(void* idVector, int argc, char **argv, char **azColNam
     int i;
     for(i=0; i<argc; i++){
         ids->push_back(atoi(argv[i]));
-        //printf("%s = %s\t", azColName[i], argv[i] ? argv[i] : "NULL");
     }
-    //printf("\n");
     return 0;
 }
 static int FileDescriptionscallback(void* fdVector, int argc, char **argv, char **azColName){
@@ -238,5 +236,14 @@ void DBOperator::findFiles(const char *condition, std::vector<FileDescription *>
     sprintf(sql,"SELECT * FROM FILES WHERE %s;",condition);
 
     sqlite3_exec(db,sql,FileDescriptionscallback,(void*) &ids,&errmsg);
+}
+
+void DBOperator::deleteClient(int clientID) {
+    char sql[SQL_MAX];
+    char * errmsg;
+
+    sprintf(sql,"DELETE FROM CLIENTS WHERE ID = %d;", clientID);
+
+    sqlite3_exec(db,sql,callback,NULL,&errmsg);
 }
 

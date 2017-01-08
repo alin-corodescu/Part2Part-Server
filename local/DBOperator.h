@@ -8,12 +8,14 @@
 
 #include <vector>
 #include <FileDescription.h>
+#include <mutex>
 #include "sqlite/sqlite3.h"
 
 class DBOperator {
 private:
     static sqlite3 *db;
 public:
+    static std::mutex dbLock;
     /**
      * sets up the tables
      * in memory tables
@@ -56,6 +58,8 @@ public:
      * @param ids
      */
     static void findFiles(const char* condition, std::vector<FileDescription*>& ids);
+
+    static void deleteClient(int clientID);
 };
 
 
