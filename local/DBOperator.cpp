@@ -6,6 +6,7 @@
 #include <FileDescriptionBuilder.h>
 #include "DBOperator.h"
 #define SQL_MAX 1000
+sqlite3* DBOperator::db;
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
     for(i=0; i<argc; i++){

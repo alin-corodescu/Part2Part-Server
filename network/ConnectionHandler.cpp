@@ -88,7 +88,7 @@ void ConnectionHandler::_cleaner() {
     while (1)
     {
 
-        std::set::iterator it;
+        std::set<ClientHandler*>::iterator it;
         clientsLock.lock();
         for (it = clients.begin(); it != clients.end();it++)
         {

@@ -13,10 +13,11 @@ add_executable(Server ${SOURCE_FILES})
 
 include_directories(/home/alin/Part2Part/shared/include)
 set(CMAKE_INCLUDE_PATH "/home/alin/Part2Part/shared")
+set(SQLITE3 "/home/alin/Part2Part/server/local/sqlite/libsqlite3.a")
 target_link_libraries(Server ${CMAKE_INCLUDE_PATH}/bin/Debug/libIOWrappers.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libCommands.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libFileDescription.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libIntegrityChecker.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libNetworkWrappers.a
         ${CMAKE_INCLUDE_PATH}/bin/Debug/libAddress.a
-        home/alin/Part2Part/server/local/sqlite/libsqlite3.a)
+        ${SQLITE3})

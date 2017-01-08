@@ -7,18 +7,11 @@
 #include <cstring>
 #include <Command.h>
 #include <CommandBuilder.h>
-#include <unistd.h>
 #include <sys/socket.h>
 #include "ClientHandler.h"
 
 ClientHandler::ClientHandler(int socket) {
     this->communicationSocket = socket;
-
-}
-
-void ClientHandler::listenForCommands() {
-    //start a new thread to accept connections
-    std::thread([=] {_listenForCommands();});
 
 }
 
@@ -34,33 +27,33 @@ void ClientHandler::_listenForCommands() {
              * others will just use to see if it is allowed
              * to do such a thing
              */
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseJoin(joined);
         }
 
         if (!strcmp(command, commandName(PUBLISH))) {
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parsePublish(joined);
         }
 
         if (!strcmp(command, commandName(QUERY))) {
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseQuery(joined);
         }
 
         if (!strcmp(command, commandName(FIND))) {
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseFind(joined);
         }
 
         if (!strcmp(command, commandName(UNPUBLISH))) {
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseUnpublish(joined);
         }
 
         if (!strcmp(command, commandName(NOTIFIY))) {
             //NAT related command
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseNotify(joined);
         }
 
@@ -68,12 +61,12 @@ void ClientHandler::_listenForCommands() {
             /**
              * reference on joined aswell
              */
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
             incomingCommandParser->parseBye(joined);
         }
 
         if(!strcmp(command, commandName(HEARTBEAT))){
-            last_activity = steady_clock::now();
+            last_activity = std::chrono::steady_clock::now();
         }
         free(command);
     }
