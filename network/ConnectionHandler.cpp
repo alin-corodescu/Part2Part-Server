@@ -15,13 +15,13 @@ void ConnectionHandler::startService() {
     _bindSocket();
     acceptConnections();
     DBOperator::createTables();
-    cleaner();
-    while(1); //block
+    //cleaner();
+    threads[0]->join(); //block
 }
 
 void ConnectionHandler::acceptConnections() {
     //start a new thread to accept connections
-    std::thread([=] {_acceptConnections();});
+    threads.push_back(new std::thread([=] {_acceptConnections();}));
 }
 
 void ConnectionHandler::_bindSocket() {
@@ -40,22 +40,24 @@ void ConnectionHandler::_bindSocket() {
         throw "Bind failed";
     }
 
+    printf("Socket binding successful!\n");
     //now the socket is bound
 
 }
 
 void ConnectionHandler::_acceptConnections() {
-
+    listen(serverSocket,5);
     while(1)
     {
         int client;
         struct sockaddr_in clientAddr;
-        socklen_t addrLen;
+        socklen_t addrLen = sizeof(sockaddr_in);
         client = accept(serverSocket,(struct sockaddr *) &clientAddr, &addrLen);
         if (client > 0)
         {
+            printf("Accepted a new client!\n");
             ClientHandler *clientHandler = new ClientHandler(client);
-            Address *address = new Address(clientAddr.sin_addr.s_addr,clientAddr.sin_port);
+            Address *address = new Address(ntohl(clientAddr.sin_addr.s_addr),ntohs(clientAddr.sin_port));
             clientHandler -> setAddress(address);
             clientHandler -> start();
             /**
@@ -80,7 +82,7 @@ ConnectionHandler *ConnectionHandler::getInstance() {
 }
 
 void ConnectionHandler::cleaner() {
-    std::thread([=] {_cleaner();});
+    threads.push_back(new std::thread([=] {_cleaner();}));
 }
 
 void ConnectionHandler::_cleaner() {
@@ -89,7 +91,7 @@ void ConnectionHandler::_cleaner() {
     {
 
         std::set<ClientHandler*>::iterator it;
-        clientsLock.lock();
+        std::lock_guard<std::mutex> lockGuard(clientsLock);
         for (it = clients.begin(); it != clients.end();it++)
         {
             steady_clock::time_point now = steady_clock::now();
@@ -102,7 +104,6 @@ void ConnectionHandler::_cleaner() {
                 delete inactive;
             }
         }
-        clientsLock.unlock();
         sleep(CLEANING_INTERVAL);
     }
 
@@ -130,7 +131,7 @@ ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
     //if there is no un-joined client waiting at this address means
     // that this is a new Notify request, and should find the client with the
     //exact same fields as the
-    clientsLock.lock();
+    std::lock_guard<std::mutex> lockGuard(clientsLock);
     for (it = clients.begin(); it != clients.end(); it++)
     {
         Address *addr = (*it)->getAddressForPeers();
@@ -141,6 +142,5 @@ ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
 
             return *it;
     }
-    clientsLock.unlock();
     return nullptr;
 }

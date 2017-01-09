@@ -76,7 +76,7 @@ void createClientsTable(sqlite3*& db)
         char* zErrMsg = 0;
 
         sql = "CREATE TABLE CLIENTS("  \
-         "ID_CLI INTEGER PRIMARY KEY NOT NULL" \
+         "ID_CLI INTEGER PRIMARY KEY NOT NULL," \
          "ZERO INTEGER);";
         int rc;
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);

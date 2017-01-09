@@ -16,17 +16,17 @@ void PeerFinder::findPeersFor(FileDescription *file) {
     builder->setType(REQUEST);
     builder->addArgument(file);
 
-    builder->addArgument(clients->size());
+    builder->addArgument(clients->size(),INT);
     int i;
     ConnectionHandler *connectionHandler  = ConnectionHandler::getInstance();
     for (i = 0; i < clients->size(); i++) {
         ClientHandler* client = connectionHandler->getClientForId(clients->at(i));
         Address *address = client->getAddressForPeers();
 
-        builder->addArgument(address->getPublicIP());
-        builder->addArgument(address->getPublicPort());
-        builder->addArgument(address->getPrivateIP());
-        builder->addArgument(address->getPrivatePort());
+        builder->addArgument(address->getPublicIP(),INT);
+        builder->addArgument(address->getPublicPort(),SHORT);
+        builder->addArgument(address->getPrivateIP(),INT);
+        builder->addArgument(address->getPrivatePort(),SHORT);
     }
 
     attachedClient->executeCommand(builder->build());

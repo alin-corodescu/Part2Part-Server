@@ -23,7 +23,7 @@ void QueryResolver::solveQuery(FileDescription *query) {
 
     CommandBuilder builder;
     builder.setType(RESULTS);
-    builder.addArgument((unsigned int)matchings.size());
+    builder.addArgument((unsigned int)matchings.size(),INT);
     for (int i = 0; i < matchings.size(); i++) {
        builder.addArgument(matchings[i]);
     }

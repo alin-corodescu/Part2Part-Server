@@ -20,7 +20,7 @@ private:
     CommandParser * incomingCommandParser;
     int communicationSocket;
     bool joined, connected;
-    std::vector<std::thread> threads;
+    std::vector<std::thread*> threads;
 public:
     bool isJoined() const;
 

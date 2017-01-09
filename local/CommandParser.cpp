@@ -124,8 +124,8 @@ void CommandParser::parseNotify(bool joined) {
     if (peer != nullptr) {
         CommandBuilder commandBuilder;
         commandBuilder.setType(OPEN);
-        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicIP());
-        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicPort());
+        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicIP(),INT);
+        commandBuilder.addArgument(parent->getAddressForPeers()->getPublicPort(),SHORT);
         Command open = commandBuilder.build();
         peer->executeCommand(open);
     }
@@ -135,4 +135,10 @@ void CommandParser::parseNotify(bool joined) {
 
 void CommandParser::parseBye(bool &joined) {
     delete parent;
+}
+
+CommandParser::CommandParser(int socket, ClientHandler *clientHandler) {
+    this->socket = socket;
+    this->parent = clientHandler;
+
 }

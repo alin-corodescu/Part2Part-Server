@@ -24,6 +24,7 @@ public:
     void parseNotify(bool joined);
     void parseBye(bool& joined);
 
+    CommandParser(int socket,ClientHandler* clientHandler);
 };
 
 

@@ -9,7 +9,7 @@
 #include <set>
 #include "ClientHandler.h"
 
-#define PORT 10001
+#define PORT 5000
 class ConnectionHandler {
 
 private:
@@ -18,6 +18,7 @@ private:
     std::set<ClientHandler*> clients;
     std::mutex clientsLock;
     std::map<int, ClientHandler*> clientIDs;
+    std::vector<std::thread*> threads;
     void _bindSocket();
     void _acceptConnections();
     void acceptConnections();

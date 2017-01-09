@@ -12,6 +12,8 @@
 
 ClientHandler::ClientHandler(int socket) {
     this->communicationSocket = socket;
+    incomingCommandParser = new CommandParser(socket,this);
+    addressForPeers = new Address();
 
 }
 
@@ -20,7 +22,7 @@ void ClientHandler::_listenForCommands() {
     while (connected)
     {
         command = readString(communicationSocket,COMM_LENGTH);
-
+        printf("Am primit comanda : -%s-\n",command);
         if (!strcmp(command, commandName(JOIN))) {
             /**
              * this one will have  a reference and update it
@@ -66,7 +68,9 @@ void ClientHandler::_listenForCommands() {
         }
 
         if(!strcmp(command, commandName(HEARTBEAT))){
+            printf("Parsez heartbeat\n");
             last_activity = std::chrono::steady_clock::now();
+
         }
         free(command);
     }
@@ -84,29 +88,27 @@ void ClientHandler::_executeCommand(Command command) {
 void ClientHandler::_processCommandQueue() {
     while (connected)
     {
-        cmdQLock.lock();
+        std::lock_guard<std::mutex> lockGuard(cmdQLock);
         bool isEmpty = commandQueue.empty();
-        cmdQLock.unlock();
         while (!isEmpty)
         {
-            cmdQLock.lock();
             Command next = commandQueue.front();
             commandQueue.pop();
-            cmdQLock.unlock();
 
             _executeCommand(next);
-            cmdQLock.lock();
+
             isEmpty = commandQueue.empty();
-            cmdQLock.unlock();
+
         }
     }
 }
 
 void ClientHandler::start() {
+    printf("Starting a new client handler\n");
     connected = true;
     incomingCommandParser->setParent(this);
-    threads.push_back(std::thread([=] {_listenForCommands();}));
-    threads.push_back(std::thread([=] {_processCommandQueue();}));
+    threads.push_back(new std::thread([=] {_listenForCommands();}));
+    threads.push_back(new std::thread([=] {_processCommandQueue();}));
 
 }
 
@@ -125,6 +127,7 @@ void ClientHandler::setCli_id(int cli_id) {
 void ClientHandler::setAddress(Address *address) {
     this->connectedFrom = address;
 
+    // this one is null
     addressForPeers->setPublicIP(address->getPublicIP());
 }
 
@@ -142,15 +145,14 @@ Address *ClientHandler::getAddressForPeers() const {
 }
 
 void ClientHandler::executeCommand(Command command) {
-    cmdQLock.lock();
+    std::lock_guard<std::mutex> lockGuard(cmdQLock);
     commandQueue.push(command);
-    cmdQLock.unlock();
 }
 
 void ClientHandler::sendPublicIp() {
     CommandBuilder builder;
     builder.setType(IDENTITY);
-    builder.addArgument(connectedFrom->getPublicIP());
+    builder.addArgument(connectedFrom->getPublicIP(),INT);
     executeCommand(builder.build());
 }
 
@@ -165,7 +167,9 @@ Address *ClientHandler::getConnectedFrom() const {
 ClientHandler::~ClientHandler() {
     connected = false;
     shutdown(communicationSocket, SHUT_RDWR);
-    for (int i = 0 ;i<threads.size(); i++)
-        threads[i].join();
+    for (int i = 0 ;i<threads.size(); i++) {
+        threads[i]->join();
+        //delete threads[i];
+    }
     delete incomingCommandParser;
 }
