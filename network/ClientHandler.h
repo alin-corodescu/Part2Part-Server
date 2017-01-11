@@ -25,7 +25,7 @@ public:
     bool isJoined() const;
 
 private:
-    std::queue<Command> commandQueue;
+    std::queue<Command*> commandQueue;
     std::mutex cmdQLock;
     //DB id of the client;
     /**
@@ -53,11 +53,11 @@ public:
 private:
     std::chrono::steady_clock::time_point last_activity;
     void _listenForCommands();
-    void _executeCommand(Command command);
+    void _executeCommand(Command* command);
     void _processCommandQueue();
 public:
     ClientHandler(int socket);
-    void executeCommand(Command command);
+    void executeCommand(Command* command);
     void start();
     std::chrono::steady_clock::time_point lastActive();
     void setAddress(Address* address);

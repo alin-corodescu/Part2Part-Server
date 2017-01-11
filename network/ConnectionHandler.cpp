@@ -110,7 +110,8 @@ void ConnectionHandler::_cleaner() {
 }
 
 ClientHandler *ConnectionHandler::getClientForId(int id) {
-    return clientIDs.at(id);
+    ClientHandler* client = clientIDs.find(id)->second;
+    return client;
 }
 
 ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
@@ -143,4 +144,8 @@ ClientHandler *ConnectionHandler::getClientConnectedWith(Address address) {
             return *it;
     }
     return nullptr;
+}
+
+void ConnectionHandler::registerClientId(ClientHandler *client, int id) {
+    clientIDs.insert(std::make_pair(id,client));
 }

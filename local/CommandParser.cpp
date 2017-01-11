@@ -20,7 +20,9 @@ void CommandParser::parseJoin(bool &joined) {
     if (!joined) {
         joined = true;
         parent->addJoinInfo(privateIP, peerPort);
-        parent->setCli_id(DBOperator::addClient());
+        int id =DBOperator::addClient();
+        parent->setCli_id(id);
+        ConnectionHandler::getInstance()->registerClientId(parent,id);
         parent->sendPublicIp();
     }
     else {
@@ -78,9 +80,9 @@ FileDescription* CommandParser::readFileDescription() {
     unsigned int fdSize;
     readUInt(socket, fdSize);
     char *fileDescriptionString;
-    readUInt(socket, fdSize);
 
     fileDescriptionString = readString(socket, fdSize);
+    printf("%s\n",fileDescriptionString);
     fileDescription = fileDescriptionBuilder->buildFromString(fileDescriptionString);
     free(fileDescriptionString);
 
@@ -126,7 +128,7 @@ void CommandParser::parseNotify(bool joined) {
         commandBuilder.setType(OPEN);
         commandBuilder.addArgument(parent->getAddressForPeers()->getPublicIP(),INT);
         commandBuilder.addArgument(parent->getAddressForPeers()->getPublicPort(),SHORT);
-        Command open = commandBuilder.build();
+        Command *open = commandBuilder.build();
         peer->executeCommand(open);
     }
 

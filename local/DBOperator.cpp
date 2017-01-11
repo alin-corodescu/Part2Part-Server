@@ -157,16 +157,16 @@ void DBOperator::createTables() {
 
 std::vector<int> *DBOperator::getClientsForFile(int fileID) {
     using namespace std;
-    static vector<int> clients;
-    clients.clear();
+    vector<int> *clients = new vector<int>();
+    clients->clear();
     char sql[SQL_MAX];
     char * errmsg;
 
     sprintf(sql,"SELECT ID_CLI FROM PUBLICATIONS WHERE ID_FILE = %d;",fileID);
 
-    sqlite3_exec(db,sql,getIDScallback,(void*) &clients, &errmsg);
+    sqlite3_exec(db,sql,getIDScallback,(void*) clients, &errmsg);
 
-    return &clients;
+    return clients;
 
 }
 

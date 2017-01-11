@@ -76,13 +76,14 @@ void ClientHandler::_listenForCommands() {
     }
 }
 
-void ClientHandler::_executeCommand(Command command) {
+void ClientHandler::_executeCommand(Command* command) {
     int size;
-    size = command.length();
+    size = command->length();
     char *string = (char*) malloc(size);
-    command.toString(string);
+    command->toString(string);
     writeString(communicationSocket,string, size);
     free(string);
+    delete command;
 }
 
 void ClientHandler::_processCommandQueue() {
@@ -92,7 +93,7 @@ void ClientHandler::_processCommandQueue() {
         bool isEmpty = commandQueue.empty();
         while (!isEmpty)
         {
-            Command next = commandQueue.front();
+            Command *next = commandQueue.front();
             commandQueue.pop();
 
             _executeCommand(next);
@@ -144,7 +145,7 @@ Address *ClientHandler::getAddressForPeers() const {
     return addressForPeers;
 }
 
-void ClientHandler::executeCommand(Command command) {
+void ClientHandler::executeCommand(Command* command) {
     std::lock_guard<std::mutex> lockGuard(cmdQLock);
     commandQueue.push(command);
 }

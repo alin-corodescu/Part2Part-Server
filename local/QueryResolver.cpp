@@ -27,7 +27,7 @@ void QueryResolver::solveQuery(FileDescription *query) {
     for (int i = 0; i < matchings.size(); i++) {
        builder.addArgument(matchings[i]);
     }
-    Command results = builder.build();
+    Command *results = builder.build();
 
     attachedClient->executeCommand(results);
 

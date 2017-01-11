@@ -36,6 +36,8 @@ public:
      * @return
      */
     ClientHandler* getClientConnectedWith(Address address);
+
+    void registerClientId(ClientHandler* client, int id);
     static ConnectionHandler* getInstance();
 };
 
